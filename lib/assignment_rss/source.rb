@@ -3,12 +3,11 @@ require 'open-uri'
 
 module AssignmentRss
   class Source
-  	attr_reader :url, :max_age, :feed_class, :entry_class, :title, :rss_feed_entries
-  	# attr_accessor :title, :rss_feed_entries
+    attr_reader :url, :max_age, :feed_class, :entry_class, :title, :rss_feed_entries
 
     # This is where the party starts
     def initialize(*args)
-    	@url, @max_age, @feed_class, @entry_class, @title, @rss_feed_entries, @cache = args
+    	@url, @max_age, @feed_class, @entry_class, @title, @rss_feed_entries = args
     end
 
     def get_feed
@@ -18,27 +17,27 @@ module AssignmentRss
     		feed = SimpleRSS.parse(rss)
     		# @title = feed.entry.title
     		rss_feed_entries = feed.feed.entries
-    		@cache = true
-    		create_feed(feed, @url)
-                                rss_feed_entries.each do |rfe|
-	    		create_feed_entries(rfe, feed.id)
-                                end
-	    	end
+    		# @cache = true
+    		created_feed = create_feed(feed, @url)
+                        rss_feed_entries.each do |rfe|
+		  create_feed_entries(rfe, created_feed)
+                        end
+    	end
 
-	    	feed = RssFeed.find_by_url(@url)
-  #   	else
-		# @feed
-		# @cache = @feed.cache
-  #   	end
+    	feed = RssFeed.find_by_url(@url)
+            # puts feed.cache
+            # else
+	# @feed
+	# @cache = @feed.cache
+            # end
     end
 
     def cached
-    	@cache ||= false
+        @cache ||= false
     end
 
     def create_feed(feed, url)
     	@feed = RssFeed.new do |rf|
-    		rf.feed_id = feed.id.to_s
     		rf.url = url.to_s
     		rf.title = feed.title.to_s
     		rf.link = feed.link.to_s
