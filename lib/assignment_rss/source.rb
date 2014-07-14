@@ -7,7 +7,13 @@ module AssignmentRss
 
     # This is where the party starts
     def initialize(*args)
-    	@url, @max_age, @feed_class, @entry_class, @title, @rss_feed_entries = args
+        @url, @max_age, @feed_class, @entry_class, @title, @rss_feed_entries = args
+        check_feed
+    end
+
+    def check_feed
+        @feed = RssFeed.find_by_url(@url)
+        @cache = true if @feed
     end
 
     def get_feed
